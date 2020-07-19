@@ -1,6 +1,8 @@
 import numpy as np
 import h5py
 import yt
+from fields_defination import \
+        setup_fluid_fields
 class ScorpioLoader():
     def __init__(self,flnm,variables,dimensions,periodicity):
         """
@@ -21,9 +23,9 @@ class ScorpioLoader():
         # the variable index <-> name table
         self.index_name_table={
             0 :'density', 7 :'ene',
-            1 :'momx',    2 :'momy', 3  :'momz',
-            4 :'blx',     5 :'bly',  6  :'blz',
-            8 :'brx',     9 :'bry',  10 :'brz'}
+            1 :'mom1',    2 :'mom2', 3  :'mom3',
+            4 :'bl1',     5 :'bl2',  6  :'bl3',
+            8 :'br1',     9 :'br2',  10 :'br3'}
         revd=dict([reversed(i) for i in self.index_name_table.items()])
         self.index_name_table.update(revd)
 
@@ -32,9 +34,9 @@ class ScorpioLoader():
         code_pressure = "code_mass / code_length / code_time**2"
         self.name_unit_table={
                 'density': code_density    , 'ene' : code_pressure   ,
-                'momx'   : code_momentum   , 'momy': code_momentum   , 'momz' : code_momentum   ,
-                'blx'    : "code_magnetic" , 'bly' : "code_magnetic" , 'blz'  : "code_magnetic" ,
-                'brx'    : "code_magnetic" , 'bry' : "code_magnetic" , 'brz'  : "code_magnetic" }
+                'mom1'   : code_momentum   , 'mom2': code_momentum   , 'mom3' : code_momentum   ,
+                'bl1'    : "code_magnetic" , 'bl2' : "code_magnetic" , 'bl3'  : "code_magnetic" ,
+                'br1'    : "code_magnetic" , 'br2' : "code_magnetic" , 'br3'  : "code_magnetic" }
     def open_file(self):
         if not self.file_opened:
             self.file = h5py.File(self.flnm,'r')
@@ -147,4 +149,5 @@ class ScorpioLoader():
                 sim_time = self.time,
                 unit_system='code',
                 periodicity=self.periodicity)
+        setup_fluid_fields(ds) 
         return ds
