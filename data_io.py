@@ -34,7 +34,7 @@ class ScorpioLoader():
         code_pressure = "code_mass / code_length / code_time**2"
         self.name_unit_table={
                 'density': code_density    , 'ene' : code_pressure   ,
-                'mom1'   : code_momentum   , 'mom2': code_momentum   , 'mom3' : code_momentum   ,
+                'mom1'   : code_momentum   , 'mom2': code_momentum, 'mom3' : code_momentum   ,
                 'bl1'    : "code_magnetic" , 'bl2' : "code_magnetic" , 'bl3'  : "code_magnetic" ,
                 'br1'    : "code_magnetic" , 'br2' : "code_magnetic" , 'br3'  : "code_magnetic" }
     def open_file(self):
