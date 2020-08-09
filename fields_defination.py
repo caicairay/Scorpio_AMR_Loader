@@ -21,6 +21,8 @@ def velocity_field(comp):
 def _setup_velocity_fields(ds):
     us = ds.unit_system
     for comp in range(3):
+        if not "mom%d" % (comp+1) in ds.fields.stream:
+            continue
         ds.add_field(("gas","velocity_%s" % direction_alias["cartesian"][comp]),
                      sampling_type="cell",
                      function=velocity_field(comp+1),
@@ -32,6 +34,8 @@ def magnetic_field(comp):
     return _magnetic
 def _setup_magnetic_fields(ds):
     for comp in range(3):
+        if not "bl%d" % (comp+1) in ds.fields.stream:
+            continue
         ds.add_field(("gas","magnetic_field_%s" % direction_alias["cartesian"][comp]),
                      sampling_type="cell",
                      function=magnetic_field(comp+1),
@@ -40,12 +44,13 @@ def _setup_magnetic_fields(ds):
 def energy_density(field,data):
     return data["stream","ene"]
 def _setup_energy_density(ds):
-    ds.add_field(
-        ("gas","energy_density"),
-        sampling_type="cell",
-        function=energy_density,
-        units=code_pressure
-        )
+    if ('stream', "ene") in ds.fields.stream:
+        ds.add_field(
+            ("gas","energy_density"),
+            sampling_type="cell",
+            function=energy_density,
+            units=code_pressure
+            )
 
 def setup_fluid_fields(ds):
     us = ds.unit_system
@@ -55,7 +60,9 @@ def setup_fluid_fields(ds):
     def _kinetic_energy_density(field, data):
         v2 = 0
         for comp in range(3):
-            v2 += data["gas","velocity_%s" % direction_alias["cartesian"][comp]]**2
+            var_name = "velocity_%s" % direction_alias["cartesian"][comp]
+            if var_name in ds.fields.gas:
+                v2 += data["gas",var_name]**2
         return 0.5*data["gas","density"]*v2
     ds.add_field(("gas", "kinetic_energy_density"), function=_kinetic_energy_density,
                  units=us["density"]*us["velocity"]**2,
@@ -64,8 +71,9 @@ def setup_fluid_fields(ds):
     def _magnetic_energy_density(field, data):
         emag =0
         for comp in range(3):
-            emag += 0.5 * data['gas', 'magnetic_field_%s'
-                    % direction_alias["cartesian"][comp]]**2
+            var_name='magnetic_field_%s' % direction_alias["cartesian"][comp]
+            if var_name in ds.fields.gas:
+                emag += 0.5 * data['gas', var_name]**2
 #        emag /= 4 * np.pi
         return emag
     ds.add_field(('gas', 'magnetic_energy_density'), function=_magnetic_energy_density,

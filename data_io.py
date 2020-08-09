@@ -106,18 +106,20 @@ class ScorpioLoader():
         """
         one_block = {}
         dsetname = 'lv{:02d}_{:010d}_q1'.format(level,blockID)
-        def _grid1d(variable_indese):
-            grid   = np.ix_(variable_indese,*self.domain[::-1]) 
+        variable_its = range(len(variable_indese))
+        def _grid1d(variable_its):
+            grid   = np.ix_(variable_its,*self.domain[::-1]) 
             grid1d = np.ravel_multi_index(grid,self.block_data_shape)
             return grid1d
         # This indexing method only valid for numpy array, 
         # thus need to convert hdf5 data to numpy array anyway.
         # a potential improvment is adding reference when output data in scorpio
-        variables = self.file[dsetname][()][_grid1d(variable_indese)]
-        for variable_index in variable_indese:
+        variables = self.file[dsetname][()][_grid1d(variable_its)]
+        for variable_it in variable_its:
+            variable_index = variable_indese[variable_it]
             variable_name=self.index_name_table[variable_index]
             unit = self.name_unit_table[variable_name]
-            one_block[variable_name] = (variables[variable_index].T, unit)
+            one_block[variable_name] = (variables[variable_it].T, unit)
         return one_block
 
     def load(self,request_fields=None):
