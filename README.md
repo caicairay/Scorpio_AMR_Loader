@@ -6,7 +6,7 @@ Usage
 import sys
 sys.path.append("/Path/of/the/package")
 from data_io import ScorpioLoader
-variables = [1,1,1,1,1,1,1,1]  # variables in the simulation ['den','momx','momy','momz','bxl','byl','bzl','ene']
+variables = [1,1,1,1,1,1,1,1]  # variables in the simulation ['den','momx','momy','momz','bx','by','bz','ene']
 dimensions = [100,100,150]     # initial resolution along x,y,z direction    
 periodicity = [False]*3        # whether the boundary condition is periodic
 flnm = './g0000.h5'            # filename of the simulation
